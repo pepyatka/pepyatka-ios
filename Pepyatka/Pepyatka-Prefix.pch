@@ -17,8 +17,21 @@
 
 
 #import "UIViewController+Storyboard.h"
+#import "UIViewController+Navigation.h"
+
 #import "NSArray+Utils.h"
 #import "NSError+Message.h"
 #import "NSError+Message+UIAlertView.h"
 #import "UIView+Frame.h"
 #import "NSObject+NIB.h"
+#import "NSObject+NSNull.h"
+#import "CoreData+MagicalRecord.h"
+#import "UIColor+Utils.h"
+#import "NSURL+NSNotification.h"
+#import "APIClient+Methods.h"
+#import "APIClient+DB.h"
+#import "NSString+Substring.h"
+#import "NSString+Empty.h"
+
+
+

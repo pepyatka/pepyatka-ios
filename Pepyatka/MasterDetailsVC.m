@@ -24,8 +24,16 @@ static const CGFloat DetailsTailWidth = 52.;
     [navVC.view dropDetailsShadow];
 }
 
-- (void)showMasterControllerAnimated:(BOOL)animated {
-    [slider slideToMasterAnimated:animated];
+//- (void)showMasterControllerAnimated:(BOOL)animated {
+//    [slider slideToMasterAnimated:animated];
+//}
+
+- (void)toggleMasterDetailsAnimated:(BOOL)animated {
+    if(slider.isDetailsShown) {
+        [slider slideToMasterAnimated:animated];
+    } else if (slider.isMasterShown) {
+        [slider slideToDetailsAnimated:animated];
+    }
 }
 
 
@@ -51,20 +59,23 @@ static const CGFloat DetailsTailWidth = 52.;
 }
 
 
-
 #pragma mark - @protocol MenuTVCDelegate
-- (void)menuTVCWantsToShowSignIn:(MenuTVC *)tvc {
-    [navVC performSegueWithIdentifier:@"SignInTVC" sender:nil];
-    [slider slideToDetailsAnimated:YES];
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowSignInWithAPIClient:(__weak APIClient *)anAPIClient {
+    SignInTVC *vc = [SignInTVC withStoryboard:self.storyboard];
+    vc.apiClient = anAPIClient;
+    [self setDetailsVC:vc animated:NO];
 }
 
-- (void)menuTVCWantsToShowSettings:(MenuTVC *)tvc {
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowSettingsWithAPIClient:(__weak APIClient *)anAPIClient {
+    SettingsTVC *vc = [SettingsTVC withStoryboard:self.storyboard];
+    vc.apiClient = anAPIClient;
+    [self setDetailsVC:vc animated:NO];
+}
+
+- (void)menuTVC:(MenuTVC *)tvc didTapPointWithAPIClient:(__weak APIClient *)anAPIClient {
 
 }
 
-- (void)menuTVCWantsToShowMainFeed:(MenuTVC *)tvc {
-
-}
 
 - (void)menuTVC:(MenuTVC *)tvc wantsToShowResultsByTag:(NSString *)aTag {
 

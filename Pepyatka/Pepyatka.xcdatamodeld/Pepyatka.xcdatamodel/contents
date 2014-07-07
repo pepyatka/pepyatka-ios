@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Server" representedClassName="Server" syncable="YES">
+        <attribute name="baseURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" valueTransformerName="NSArrayTransformer" syncable="YES"/>
+        <relationship name="appUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="signedServer" inverseEntity="User" syncable="YES"/>
+    </entity>
+    <entity name="User" representedClassName="User" syncable="YES">
+        <attribute name="baseURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="receiveEmails" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="rss" optional="YES" attributeType="Transformable" valueTransformerName="NSArrayTransformer" syncable="YES"/>
+        <attribute name="screenName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="signedServer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Server" inverseName="appUser" inverseEntity="Server" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Server" positionX="-344" positionY="-97" width="128" height="88"/>
+        <element name="User" positionX="-54" positionY="-9" width="128" height="163"/>
+    </elements>
+</model>
