@@ -1,5 +1,7 @@
 #import "APIClient.h"
 #import "ServerUser.h"
+#import "ServerTimeline.h"
+#import "SearchrResults.h"
 
 @interface APIClient (Methods)
 
@@ -21,5 +23,17 @@
 
 - (NSURLSessionDataTask *)pseudoLogoutWithCompletion:(void (^)(NSError *err))completion;
 
+- (NSURLSessionDataTask *)getTimelineWithName:(NSString *)aName offset:(NSNumber *)anOffest limit:(NSNumber *)aLimit
+                                   completion:(void (^)(NSError *err, ServerTimeline *timeline))completion;
+
+- (NSURLSessionDataTask *)getSearchResultsWithText:(NSString *)aText offset:(NSNumber *)anOffset limit:(NSNumber *)aLimit
+                                   completion:(void (^)(NSError *err, SearchrResults *searchResults))completion;
+
+
+
 
 @end
+
+
+
+

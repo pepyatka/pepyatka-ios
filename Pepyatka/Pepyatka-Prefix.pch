@@ -19,6 +19,9 @@
 #import "UIViewController+Storyboard.h"
 #import "UIViewController+Navigation.h"
 
+
+#define CallIf(completion) if(completion) completion
+
 #import "NSArray+Utils.h"
 #import "NSError+Message.h"
 #import "NSError+Message+UIAlertView.h"
@@ -32,6 +35,13 @@
 #import "APIClient+DB.h"
 #import "NSString+Substring.h"
 #import "NSString+Empty.h"
+#import "NSNumber+NSDate.h"
+#import "PureLayout.h"
+#import "SVPullToRefresh.h"
+#import "UIView+FirstResponder.h"
+#import "UIScrollView+Utils.h"
+
+
 
 
 

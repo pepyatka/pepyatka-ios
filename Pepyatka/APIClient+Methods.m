@@ -1,9 +1,6 @@
 #import "APIClient+Methods.h"
 #import "NSError+Message.h"
 
-
-#define Call(completion) if(completion) completion
-
 @interface NSError (JSONError)
 
 + (NSError *)JSONErrorFromResponse:(id)res;
@@ -31,16 +28,16 @@
                         completion:(void (^)(NSError *err, ServerUser *user))completion
 {
     if(err) {
-        Call(completion)(err, nil);
+        CallIf(completion)(err, nil);
     } else {
         NSError *JSONError = [NSError JSONErrorFromResponse:res];
         if(JSONError) {
-            Call(completion)(JSONError, nil);
+            CallIf(completion)(JSONError, nil);
         } else {
             ServerUser *user = [ServerUser new];
             [user fillFromDictionary:res];
             
-            Call(completion)(nil, user);
+            CallIf(completion)(nil, user);
         }
     }
 }
@@ -49,19 +46,19 @@
                           completion:(void (^)(NSError *err, ServerUser *user))completion
 {
     if(err) {
-        Call(completion)(err, nil);
+        CallIf(completion)(err, nil);
     } else {
         NSError *JSONError = [NSError JSONErrorFromResponse:res];
         if(JSONError) {
-            Call(completion)(JSONError, nil);
+            CallIf(completion)(JSONError, nil);
         } else {
             if(![res isKindOfClass:[NSDictionary class]]) {
-                Call(completion)([NSError errorWithMessage:NSLocalizedString(@"login/register: the response is not a dictionary with `user` field", nil)], nil);
+                CallIf(completion)([NSError errorWithMessage:NSLocalizedString(@"login/register: the response is not a dictionary with `user` field", nil)], nil);
             } else {
                 NSDictionary *rawUser = [res[@"user"] noNullObject];
                 ServerUser *user = [ServerUser new];
                 [user fillFromDictionary:rawUser];
-                Call(completion)(nil, user);
+                CallIf(completion)(nil, user);
             }
         }
     }
@@ -72,7 +69,7 @@
 - (NSURLSessionDataTask *)getTagsWithCompletion:(void (^)(NSError *err, NSArray *rawTags))completion {
     return
     [self get:@"/v1/tags" params:nil completion:^(NSError *err, id res) {
-        Call(completion)(err, [res isKindOfClass:[NSArray class]]? res: nil);
+        CallIf(completion)(err, [res isKindOfClass:[NSArray class]]? res: nil);
     }];
 }
 
@@ -152,9 +149,101 @@
 
 - (NSURLSessionDataTask *)pseudoLogoutWithCompletion:(void (^)(NSError *err))completion {
     [self removeAllCookies];
-    Call(completion)(nil);
+    CallIf(completion)(nil);
     return nil;
 }
+
+
+- (NSURLSessionDataTask *)getTimelineWithName:(NSString *)aName offset:(NSNumber *)anOffset limit:(NSNumber *)aLimit
+                                   completion:(void (^)(NSError *err, ServerTimeline *timeline))completion
+{
+    NSString *method = [NSString stringWithFormat:@"/v1/timeline/%@", aName];
+    NSMutableDictionary *params = @{}.mutableCopy;
+    if(anOffset) {
+        params[@"offset"] = anOffset;
+    }
+    
+    if(aLimit) {
+        params[@"limit"] = aLimit;
+    }
+    
+    return
+    [self get:method params:params completion:^(NSError *err, NSDictionary *res) {
+        if(![res isKindOfClass:[NSDictionary class]]) {
+            NSString *m = [NSString stringWithFormat:@"GET %@ -> %@\n Error, it must return an dictionary.", method, res];
+            CallIf(completion)([NSError errorWithMessage:m], nil);
+            return;
+        }
+        
+        if(!res.count) {
+            NSString *m = [NSString stringWithFormat:@"GET %@ -> %@\n Error, it must not be empty.", method, res];
+            CallIf(completion)([NSError errorWithMessage:m], nil);
+            return;
+        }
+        
+        NSError *jsonErr = [NSError JSONErrorFromResponse:res];
+        if(jsonErr) {
+            CallIf(completion)(jsonErr, nil);
+            return;
+        }
+        
+        ServerTimeline *t = [ServerTimeline new];
+        [t fillWithDictionary:res];
+        
+        CallIf(completion)(nil, t);
+    }];
+}
+
+
+- (NSURLSessionDataTask *)getSearchResultsWithText:(NSString *)aText offset:(NSNumber *)anOffset limit:(NSNumber *)aLimit
+                                        completion:(void (^)(NSError *err, SearchrResults *searchResults))completion
+{
+    NSString *method = [NSString stringWithFormat:@"/v1/search/%@", [aText stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSMutableDictionary *params = @{}.mutableCopy;
+    if(anOffset) {
+        params[@"offset"] = anOffset;
+    }
+    
+    if(aLimit) {
+        params[@"limit"] = aLimit;
+    }
+    
+    return
+    [self get:method params:params completion:^(NSError *err, NSDictionary *res) {
+        if(![res isKindOfClass:[NSDictionary class]]) {
+            NSString *m = [NSString stringWithFormat:@"GET %@ -> %@\n Error, it must return an dictionary.", method, res];
+            CallIf(completion)([NSError errorWithMessage:m], nil);
+            return;
+        }
+        
+        if(!res.count) {
+            NSString *m = [NSString stringWithFormat:@"GET %@ -> %@\n Error, it must not be empty.", method, res];
+            CallIf(completion)([NSError errorWithMessage:m], nil);
+            return;
+        }
+        
+        NSError *jsonErr = [NSError JSONErrorFromResponse:res];
+        if(jsonErr) {
+            CallIf(completion)(jsonErr, nil);
+            return;
+        }
+        
+        NSArray *rawPosts = [res[@"posts"] noNullObject];
+        if(![rawPosts isKindOfClass:[NSArray class]]) {
+            NSString *m = [NSString stringWithFormat:@"GET %@ -> %@\n Error, the `posts` must be an dictionary.", method, res];
+            CallIf(completion)([NSError errorWithMessage:m], nil);
+            return;
+        }
+        
+        SearchrResults *r = [SearchrResults new];
+        [r fillWithRAWServerPosts:rawPosts];
+        
+        
+        CallIf(completion)(nil, r);
+    }];
+
+}
+
 
 
 @end

@@ -3,6 +3,7 @@
 #import "User+Utils.h"
 #import "APIClient+Methods.h"
 #import "Server.h"
+#import "PostsVC.h"
 
 
 @implementation SettingsTVC
@@ -60,6 +61,12 @@
 }
 
 #pragma mark - Actions
+
+
+- (IBAction)posts:(UIButton *)b {
+    PostsVC *vc = [[PostsVC alloc] initWithAPIClient:apiClient timelineName:serverUser.userName];
+    [self.navigationController pushViewController:vc animated:YES];
+}
 
 - (void)save {
     serverUser.screenName = screenNameF.text;

@@ -5,9 +5,8 @@
 
 @protocol MenuTVCDelegate;
 
-@interface MenuTVC : UITableViewController <MenuProfileCellDelegate> {
+@interface MenuTVC : UITableViewController <MenuProfileCellDelegate, UISearchBarDelegate> {
     NSArray *tags;
-    
 }
 @property (nonatomic, weak) id<MenuTVCDelegate> delegate;
 @end
@@ -18,6 +17,6 @@
 - (void)menuTVC:(MenuTVC *)tvc wantsToShowSettingsWithAPIClient:(__weak APIClient *)anAPIClient;
 - (void)menuTVC:(MenuTVC *)tvc didTapPointWithAPIClient:(__weak APIClient *)anAPIClient;
 
-- (void)menuTVC:(MenuTVC *)tvc wantsToShowResultsByTag:(NSString *)aTag;
-- (void)menuTVC:(MenuTVC *)tvc wantsToShowSearchResultWithText:(NSString *)aText;
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowResultsByTag:(NSString *)aTag APIClient:(__weak APIClient *)anAPIClient;
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowSearchResultWithText:(NSString *)aText APIClient:(__weak APIClient *)anAPIClient;
 @end

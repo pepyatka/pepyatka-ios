@@ -71,7 +71,7 @@ static const NSUInteger tagsSectionIndex = 2;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if(indexPath.section == tagsSectionIndex) {
         NSString *tagName = tags[indexPath.row];
-        [self.delegate menuTVC:self wantsToShowResultsByTag:tagName];
+        [self.delegate menuTVC:self wantsToShowResultsByTag:tagName APIClient:[self currentClient]];
     }
     
     if(indexPath.section == pointsSectionIndex) {
@@ -107,5 +107,24 @@ static const NSUInteger tagsSectionIndex = 2;
     [self.delegate menuTVC:self wantsToShowSettingsWithAPIClient:aCell.apiClient];
 }
 
+
+#pragma mark - @protocol UISearchBarDelegate <UIBarPositioningDelegate>
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self.delegate menuTVC:self wantsToShowSearchResultWithText:searchBar.text APIClient:[self currentClient]];
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if(!searchText.length) {
+        [searchBar performSelector:@selector(resignFirstResponder)
+                        withObject:nil
+                        afterDelay:0.1];
+    }
+}
 
 @end

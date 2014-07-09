@@ -3,10 +3,11 @@
 #import "SignInTVC.h"
 #import "SettingsTVC.h"
 #import "RightMasterDetailsSlider.h"
+#import "PostsVC.h"
 
 
 @interface MasterDetailsVC : UIViewController <
-    MenuTVCDelegate,
+    MenuTVCDelegate, SettingsTVCDelegate, SignInTVCDelegate,
     UINavigationControllerDelegate
 > {
     __weak IBOutlet UIView *detailsContainerV;

@@ -20,13 +20,12 @@ static const CGFloat DetailsTailWidth = 52.;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [slider slideToDetailsAnimated:YES];
-    
     [navVC.view dropDetailsShadow];
+    
+    
+    PostsVC *tlvc = [[PostsVC alloc] initWithAPIClient:[APIClient allClients][0] timelineName:@"everyone"];
+    [self setDetailsVC:tlvc animated:NO];
 }
-
-//- (void)showMasterControllerAnimated:(BOOL)animated {
-//    [slider slideToMasterAnimated:animated];
-//}
 
 - (void)toggleMasterDetailsAnimated:(BOOL)animated {
     if(slider.isDetailsShown) {
@@ -53,6 +52,18 @@ static const CGFloat DetailsTailWidth = 52.;
 
 #pragma mark - Details Control
 
+- (void)showEveryoneForClient:(APIClient *)client {
+    PostsVC *tlvc = [[PostsVC alloc] initWithAPIClient:client timelineName:@"everyone"];
+    [self setDetailsVC:tlvc animated:NO];
+}
+
+- (void)showSettingsWithClient:(APIClient *)client {
+    SettingsTVC *vc = [SettingsTVC withStoryboard:self.storyboard];
+    vc.delegate = self;
+    vc.apiClient = client;
+    [self setDetailsVC:vc animated:NO];
+}
+
 - (void)setDetailsVC:(UIViewController *)avc animated:(BOOL)animated {
     [navVC setViewControllers:@[avc] animated:animated];
     [slider slideToDetailsAnimated:YES];
@@ -62,30 +73,63 @@ static const CGFloat DetailsTailWidth = 52.;
 #pragma mark - @protocol MenuTVCDelegate
 - (void)menuTVC:(MenuTVC *)tvc wantsToShowSignInWithAPIClient:(__weak APIClient *)anAPIClient {
     SignInTVC *vc = [SignInTVC withStoryboard:self.storyboard];
+    vc.delegate = self;
     vc.apiClient = anAPIClient;
     [self setDetailsVC:vc animated:NO];
 }
 
 - (void)menuTVC:(MenuTVC *)tvc wantsToShowSettingsWithAPIClient:(__weak APIClient *)anAPIClient {
-    SettingsTVC *vc = [SettingsTVC withStoryboard:self.storyboard];
-    vc.apiClient = anAPIClient;
-    [self setDetailsVC:vc animated:NO];
+    [self showSettingsWithClient:anAPIClient];
 }
 
 - (void)menuTVC:(MenuTVC *)tvc didTapPointWithAPIClient:(__weak APIClient *)anAPIClient {
-
+    [self showEveryoneForClient:anAPIClient];
 }
 
 
-- (void)menuTVC:(MenuTVC *)tvc wantsToShowResultsByTag:(NSString *)aTag {
-
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowResultsByTag:(NSString *)aTag APIClient:(__weak APIClient *)anAPIClient {
+    PostsVC *tlvc = [[PostsVC alloc] initWithAPIClient:anAPIClient searchText:aTag];
+    [self setDetailsVC:tlvc animated:NO];
 }
 
-- (void)menuTVC:(MenuTVC *)tvc wantsToShowSearchResultWithText:(NSString *)aText {
-
+- (void)menuTVC:(MenuTVC *)tvc wantsToShowSearchResultWithText:(NSString *)aText APIClient:(__weak APIClient *)anAPIClient {
+    PostsVC *tlvc = [[PostsVC alloc] initWithAPIClient:anAPIClient searchText:aText];
+    [self setDetailsVC:tlvc animated:NO];
 }
+
+
+#pragma mark - SettingsTVCDelegate
+- (void)didLogoutInSettingsTVC:(SettingsTVC *)avc {
+    [self showEveryoneForClient:avc.apiClient];
+}
+
+- (void)didSaveInSettingsTVC:(SettingsTVC *)avc {
+    [self showEveryoneForClient:avc.apiClient];
+}
+
+#pragma mark - @protocol SignInTVCDelegate
+
+- (void)didLoginSuccessInSignInTVC:(SignInTVC *)avc {
+    [self showSettingsWithClient:avc.apiClient];
+}
+
 
 #pragma mark - @protocol UINavigationControllerDelegate <NSObject>
+
+- (void)hideKeyboard {
+    UIView *fr = [menuVC.view findFirstResponder];
+    if(fr) {
+        [fr resignFirstResponder];
+        return;
+    }
+    
+    fr = [navVC.view findFirstResponder];
+    if(fr) {
+        [fr resignFirstResponder];
+        return;
+    }
+}
+
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     [viewController setLeftNavigation];
