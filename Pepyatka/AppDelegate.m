@@ -2,7 +2,7 @@
 #import "APIClient.h"
 #import "Server.h"
 
-static NSString *singleBaseURL = @"http://pepyatka.com/";
+static NSString *singleBaseURL = @"https://try.pepyatka.com/";
 
 @implementation AppDelegate
 
